@@ -3,7 +3,7 @@ using UnityEditor.Callbacks;
 using UnityEngine;
 using XcodeProjectBuilder;
 
-public class ExamplePostProcess : MonoBehaviour
+public static class ExamplePostProcess
 {
     [PostProcessBuild]
     public static void OnPostProcess(BuildTarget buildTarget, string buildPath)
