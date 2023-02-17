@@ -1,4 +1,6 @@
-﻿namespace XcodeProjectBuilder
+﻿using UnityEditor.iOS.Xcode;
+
+namespace XcodeProjectBuilder
 {
     public class NotSupportPlatform : IXcodeProject
     {
@@ -30,6 +32,7 @@
 
         private class NotSupportPlist : IPlist, IPlistBooleanElements
         {
+            public PlistElementDict Root => null;
             public IPlistBooleanElements Booleans => this;
 
             bool IPlistBooleanElements.this[string key]

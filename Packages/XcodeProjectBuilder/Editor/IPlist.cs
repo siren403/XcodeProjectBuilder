@@ -5,6 +5,7 @@ namespace XcodeProjectBuilder
 {
     public interface IPlist
     {
+        PlistElementDict Root { get; }
         IPlistBooleanElements Booleans { get; }
     }
 
@@ -17,6 +18,8 @@ namespace XcodeProjectBuilder
     {
         private readonly PlistDocument _plist;
         private readonly string _path;
+
+        public PlistElementDict Root => _plist.root;
 
         public IPlistBooleanElements Booleans => this;
 
