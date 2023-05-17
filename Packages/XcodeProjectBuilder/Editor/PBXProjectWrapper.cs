@@ -35,6 +35,13 @@ namespace XcodeProjectBuilder
             _info = new InfoPlist(this);
         }
 
+        public void AddCapability(PBXCapabilityType capability,
+            string entitlementsFilePath = null,
+            bool addOptionalFramework = false)
+        {
+            Project.AddCapability(_unityMainTargetGuid, capability, entitlementsFilePath, addOptionalFramework);
+        }
+
         public void AddBuildProperty(string name, string value)
         {
             Project.AddBuildProperty(ProjectGuid, name, value);

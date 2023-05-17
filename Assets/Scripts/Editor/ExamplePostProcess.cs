@@ -12,6 +12,7 @@ public static class ExamplePostProcess
 
         xcode.BuildSettings.EnableBitcode = false;
         xcode.Info.DisableAppUsesNonExemptEncryption();
+        xcode.Info.SetBundleName("Sample");
         // xcode.BuildPhases.AddCopyBundleResources("dummy/project_structure.json");
         // xcode.BuildPhases.AddCopyBundleResources("dummy/project_structure.json", "copy/project_structure.json");
     }

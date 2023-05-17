@@ -7,6 +7,7 @@ namespace XcodeProjectBuilder
     {
         PlistElementDict Root { get; }
         IPlistBooleanElements Booleans { get; }
+        IPlistStringElements Strings { get; }
     }
 
     public interface IPlistBooleanElements
@@ -14,7 +15,14 @@ namespace XcodeProjectBuilder
         public bool this[string key] { get; set; }
     }
 
-    internal class InfoPlist : IPlist, IDisposable, IPlistBooleanElements
+    public interface IPlistStringElements
+    {
+        public string this[string key] { get; set; }
+    }
+
+    internal class InfoPlist : IPlist, IDisposable,
+        IPlistBooleanElements,
+        IPlistStringElements
     {
         private readonly PlistDocument _plist;
         private readonly string _path;
@@ -22,6 +30,7 @@ namespace XcodeProjectBuilder
         public PlistElementDict Root => _plist.root;
 
         public IPlistBooleanElements Booleans => this;
+        public IPlistStringElements Strings => this;
 
         public InfoPlist(PBXProjectWrapper wrapper)
         {
@@ -40,6 +49,12 @@ namespace XcodeProjectBuilder
         {
             get => _plist.root.values[key].AsBoolean();
             set => _plist.root.SetBoolean(key, value);
+        }
+
+        string IPlistStringElements.this[string key]
+        {
+            get => _plist.root.values[key].AsString();
+            set => _plist.root.SetString(key, value);
         }
     }
 }

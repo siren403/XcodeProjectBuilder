@@ -9,6 +9,11 @@ namespace XcodeProjectBuilder
             plist.Booleans["ITSAppUsesNonExemptEncryption"] = false;
         }
 
+        public static void SetBundleName(this IPlist plist, string name)
+        {
+            plist.Strings["CFBundleName"] = name;
+        }
+
         /// <summary>
         /// https://developers.google.com/identity/sign-in/ios/start-integrating?hl=ko#add_client_id
         /// </summary>

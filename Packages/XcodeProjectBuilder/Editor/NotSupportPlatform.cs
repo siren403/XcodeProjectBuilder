@@ -30,10 +30,11 @@ namespace XcodeProjectBuilder
             }
         }
 
-        private class NotSupportPlist : IPlist, IPlistBooleanElements
+        private class NotSupportPlist : IPlist, IPlistBooleanElements, IPlistStringElements
         {
             public PlistElementDict Root => null;
             public IPlistBooleanElements Booleans => this;
+            public IPlistStringElements Strings => this;
 
             bool IPlistBooleanElements.this[string key]
             {
@@ -43,6 +44,12 @@ namespace XcodeProjectBuilder
 
             public void Dispose()
             {
+            }
+
+            string IPlistStringElements.this[string key]
+            {
+                get => string.Empty;
+                set { }
             }
         }
 
