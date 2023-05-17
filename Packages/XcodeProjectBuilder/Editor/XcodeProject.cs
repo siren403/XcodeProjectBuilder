@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEditor.iOS.Xcode;
 
 namespace XcodeProjectBuilder
 {
@@ -9,6 +10,10 @@ namespace XcodeProjectBuilder
         IBuildSettings BuildSettings { get; }
         IBuildPhases BuildPhases { get; }
         IPlist Info { get; }
+
+        void AddCapability(PBXCapabilityType capability, 
+            string entitlementsFilePath = null,
+            bool addOptionalFramework = false);
     }
 
     public static class XcodeProject

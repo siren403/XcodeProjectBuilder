@@ -7,6 +7,10 @@ namespace XcodeProjectBuilder
         public IBuildSettings BuildSettings => new NotSupportBuildSettings();
         public IBuildPhases BuildPhases => new NotSupportBuildPhases();
         public IPlist Info => new NotSupportPlist();
+        public void AddCapability(PBXCapabilityType capability, string entitlementsFilePath = null, bool addOptionalFramework = false)
+        {
+            
+        }
 
         private class NotSupportBuildSettings : IBuildSettings
         {
