@@ -1,7 +1,7 @@
 {
     "name": "com.siren.xcode-project-builder",
     "displayName": "XcodeProjectBuilder",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "unity": "2021.3",
     "description": "iOS PostProcess Support",
     "keywords": [],
