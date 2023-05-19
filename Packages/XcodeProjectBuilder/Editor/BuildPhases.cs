@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace XcodeProjectBuilder
 {
-    internal class PBXBuildPhases : IBuildPhases
+    public class BuildPhases
     {
-        private readonly PBXProjectWrapper _wrapper;
+        private readonly XcodeProject _xcodeProject;
 
-        public PBXBuildPhases(PBXProjectWrapper wrapper)
+        public BuildPhases(XcodeProject xcodeProject)
         {
-            _wrapper = wrapper;
+            _xcodeProject = xcodeProject;
         }
 
         public void AddCopyBundleResources(string assetsUnderPath)
@@ -27,7 +27,7 @@ namespace XcodeProjectBuilder
             }
 
             var assetsPath = Path.Combine("Assets", assetsUnderPath);
-            var destPath = Path.Combine(_wrapper.BuildPath, toPath);
+            var destPath = Path.Combine(_xcodeProject.BuildPath, toPath);
 
 
             if (!File.Exists(destPath))
@@ -39,7 +39,7 @@ namespace XcodeProjectBuilder
                 }
 
                 File.Copy(assetsPath, destPath);
-                _wrapper.AddFileToBuild(destPath, toPath);
+                _xcodeProject.AddFileToBuild(destPath, toPath);
             }
         }
     }

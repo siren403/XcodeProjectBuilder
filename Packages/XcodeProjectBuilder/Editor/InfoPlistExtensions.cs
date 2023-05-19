@@ -4,12 +4,19 @@ namespace XcodeProjectBuilder
 {
     public static class InfoPlistExtensions
     {
-        public static void DisableAppUsesNonExemptEncryption(this IPlist plist)
+        public static Plist ReadInfoPlist(this XcodeProject project)
+        {
+            var plist = new Plist(project.BuildPath);
+            plist.ReadFromFile();
+            return plist;
+        }
+        
+        public static void DisableAppUsesNonExemptEncryption(this Plist plist)
         {
             plist.Booleans["ITSAppUsesNonExemptEncryption"] = false;
         }
 
-        public static void SetBundleName(this IPlist plist, string name)
+        public static void SetBundleName(this Plist plist, string name)
         {
             plist.Strings["CFBundleName"] = name;
         }
@@ -19,7 +26,7 @@ namespace XcodeProjectBuilder
         /// </summary>
         /// <param name="plist"></param>
         /// <param name="googleServicePlistPath">GoogleService-Info.plist path (from project root)</param>
-        public static void GoogleSignInConfiguration(this IPlist plist, string googleServicePlistPath)
+        public static void GoogleSignInConfiguration(this Plist plist, string googleServicePlistPath)
         {
             var googleServicePlist = new PlistDocument();
             googleServicePlist.ReadFromFile(googleServicePlistPath);
@@ -34,7 +41,7 @@ namespace XcodeProjectBuilder
         /// <param name="plist"></param>
         /// <param name="clientId"></param>
         /// <param name="reversedClientId"></param>
-        public static void GoogleSignInConfiguration(this IPlist plist, string clientId, string reversedClientId)
+        public static void GoogleSignInConfiguration(this Plist plist, string clientId, string reversedClientId)
         {
             plist.Root.SetString("GIDClientID", clientId);
 

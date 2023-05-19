@@ -1,59 +1,88 @@
-using System;
+﻿using System;
 using System.IO;
-using UnityEditor;
 using UnityEditor.iOS.Xcode;
+using UnityEngine;
 
 namespace XcodeProjectBuilder
 {
-    public interface IXcodeProject : System.IDisposable
+    public partial class XcodeProject
     {
-        IBuildSettings BuildSettings { get; }
-        IBuildPhases BuildPhases { get; }
-        IPlist Info { get; }
-
-        void AddCapability(PBXCapabilityType capability, 
-            string entitlementsFilePath = null,
-            bool addOptionalFramework = false);
-    }
-
-    public static class XcodeProject
-    {
-        public static IXcodeProject FromPostProcess(BuildTarget buildTarget, string buildPath)
-        {
-            if (buildTarget != BuildTarget.iOS)
-            {
-                return new NotSupportPlatform();
-            }
-
-            return new PBXProjectWrapper(buildPath);
-        }
+        public string BuildPath { get; }
+        
+        /// <summary>
+        /// PBXProjectPath
+        /// </summary>
+        public string ProjectPath { get; }
+        
+        /// <summary>
+        /// PBXProject
+        /// </summary>
+        internal PBXProject Project { get; }
 
         /// <summary>
-        /// require PostProcessBuild(45)
-        /// - Xcode14 version issue
-        /// - https://github.com/google/GoogleSignIn-iOS/issues/105
-        /// - https://stackoverflow.com/questions/72561696/xcode-14-needs-selected-development-team-for-pod-bundles
-        /// - [jar resolver - append podfile](https://github.com/googlesamples/unity-jar-resolver#integration-strategies)
+        /// PBXProjectGuid
         /// </summary>
-        /// <param name="buildTarget"></param>
-        /// <param name="buildPath"></param>
-        public static void SkipPodBundleSign(BuildTarget buildTarget, string buildPath)
+        internal string ProjectGuid { get; }
+
+        public BuildSettings BuildSettings { get; }
+        public BuildPhases BuildPhases { get; }
+
+        public string UnityFrameworkTargetGuid { get; }
+        public string UnityMainTargetGuid { get; }
+
+        private XcodeProject(string buildPath)
         {
-            if (buildTarget != BuildTarget.iOS) return;
-            using var writer = File.AppendText($"{buildPath}/Podfile");
-            var postInstall = @"
-post_install do |installer|
-    installer.pods_project.targets.each do |target|
-        if target.respond_to?(:product_type) and target.product_type == ""com.apple.product-type.bundle""
-            target.build_configurations.each do |config|
-                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-            end
-        end
-    end
-end
-";
-            writer.WriteLine(postInstall);
-            writer.Close();
+            Debug.Log(buildPath);
+            BuildPath = buildPath;
+            ProjectPath = PBXProject.GetPBXProjectPath(buildPath);
+            Project = new PBXProject();
+            Project.ReadFromFile(ProjectPath);
+
+            ProjectGuid = Project.ProjectGuid();
+            UnityMainTargetGuid = Project.GetUnityMainTargetGuid();
+            UnityFrameworkTargetGuid = Project.GetUnityFrameworkTargetGuid();
+
+            BuildSettings = new BuildSettings(this);
+            BuildPhases = new BuildPhases(this);
+        }
+
+        public void AddBuildProperty(string name, string value)
+        {
+            Project.AddBuildProperty(ProjectGuid, name, value);
+        }
+
+        public void SetBuildProperty(string name, string value)
+        {
+            Project.SetBuildProperty(ProjectGuid, name, value);
+        }
+
+        public void AddFileToBuild(string fromPath, string toPath)
+        {
+            var fileGuid = Project.AddFile(fromPath, toPath);
+            Project.AddFileToBuild(UnityMainTargetGuid, fileGuid);
+        }
+
+        public void WriteToFile()
+        {
+            Project.WriteToFile(ProjectPath);
+        }
+    }
+
+    public static class CapabilityExtensions
+    {
+        public static void AddPushNotifications(this XcodeProject xcodeProject,
+            string entitlementsFileName = "Unity-iPhone")
+        {
+            var entitlements = $"{entitlementsFileName}.entitlements";
+            var manager = new ProjectCapabilityManager(xcodeProject.ProjectPath, entitlements,
+                targetGuid: xcodeProject.UnityMainTargetGuid);
+            manager.AddPushNotifications(false);
+            manager.AddInAppPurchase();
+            manager.WriteToFile();
+
+            xcodeProject.Project.AddFile(entitlements, entitlements);
+            xcodeProject.Project.AddBuildProperty(xcodeProject.UnityMainTargetGuid, "CODE_SIGN_ENTITLEMENTS",
+                entitlements);
         }
     }
 }

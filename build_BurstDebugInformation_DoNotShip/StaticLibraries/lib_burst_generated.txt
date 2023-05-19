@@ -6,7 +6,7 @@ Library: /Users/pensioncraft/workspace/unity/XcodeProjectBuilder/Temp/StagingAre
 --meta-data-generation=False
 --dump=Function
 --float-precision=Standard
---compilation-defines=UNITY_2021_3_18
+--compilation-defines=UNITY_2021_3_23
 --compilation-defines=UNITY_2021_3
 --compilation-defines=UNITY_2021
 --compilation-defines=UNITY_5_3_OR_NEWER
@@ -132,7 +132,7 @@ Library: /Users/pensioncraft/workspace/unity/XcodeProjectBuilder/Temp/StagingAre
 --compilation-defines=TIMELINE_FRAMEACCURATE
 --compilation-defines=ENABLE_SPRITESHAPE_BURST
 --compilation-defines=ENABLE_URP
---linker-options=min-ios-version=11.0
+--linker-options=min-ios-version=12.0
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/pensioncraft/workspace/unity/XcodeProjectBuilder/Temp/Burst
 --generate-static-linkage-methods

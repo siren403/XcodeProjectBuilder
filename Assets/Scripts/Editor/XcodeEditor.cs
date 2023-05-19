@@ -24,14 +24,42 @@ namespace Editor
 
             rootVisualElement.Q<Button>("plist-add-list-button").clicked += () =>
             {
-                using var xcode = CreateBuilder();
-                xcode.Info.GoogleSignInConfiguration("Assets/Config/GoogleService-Info.plist");
+                var xcode = CreateBuilder();
+
+                var info = xcode.ReadInfoPlist();
+                info.GoogleSignInConfiguration("Assets/Config/GoogleService-Info.plist");
+                info.WriteToFile();
+                xcode.WriteToFile();
+                
+            };
+
+            rootVisualElement.Q<Button>("add-push").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WritePushNotifications();
+            };
+            rootVisualElement.Q<Button>("add-game-center").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WriteGameCenter();
+            };
+            rootVisualElement.Q<Button>("add-in-app").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WriteInAppPurchase();
+            };
+            rootVisualElement.Q<Button>("all").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WritePushNotifications();
+                capability.WriteGameCenter();
+                capability.WriteInAppPurchase();
             };
         }
 
-        private static IXcodeProject CreateBuilder()
+        private static XcodeProject CreateBuilder()
         {
-            var xcode = XcodeProject.FromPostProcess(BuildTarget.iOS, "build");
+            var xcode = XcodeProject.ReadProject("build");
             return xcode;
         }
     }
