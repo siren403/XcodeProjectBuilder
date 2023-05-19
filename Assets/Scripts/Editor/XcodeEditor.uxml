@@ -8,6 +8,8 @@
     <engine:Foldout text="Plist">
         <engine:Button name="plist-add-list-button" text="Add List"/>
         <engine:Button name="add-push" text="Add Push"/>
+        <engine:Button name="add-fcm-push" text="Add FCM Push"/>
+        <engine:Button name="add-background-modes" text="Add BackgroundModes"/>
         <engine:Button name="add-game-center" text="Add GameCenter"/>
         <engine:Button name="add-in-app" text="Add InApp"/>
         <engine:Button name="all" text="All"/>

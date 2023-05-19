@@ -30,13 +30,24 @@ namespace Editor
                 info.GoogleSignInConfiguration("Assets/Config/GoogleService-Info.plist");
                 info.WriteToFile();
                 xcode.WriteToFile();
-                
             };
 
             rootVisualElement.Q<Button>("add-push").clicked += () =>
             {
                 var capability = XcodeProject.ReadCapability("build");
                 capability.WritePushNotifications();
+            };
+
+            rootVisualElement.Q<Button>("add-fcm-push").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WriteFirebasePushNotifications();
+            };
+
+            rootVisualElement.Q<Button>("add-background-modes").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WriteBackgroundModes(BackgroundModesOptions.BackgroundFetch);
             };
             rootVisualElement.Q<Button>("add-game-center").clicked += () =>
             {

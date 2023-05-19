@@ -15,6 +15,7 @@ namespace XcodeProjectBuilder
             _project = project;
             _entitlementFileName = $"{entitlementsFileName}.entitlements";
             _entitlementFileDirectory = $"Unity-iPhone";
+            ReadEntitlement();
         }
 
 
@@ -26,7 +27,7 @@ namespace XcodeProjectBuilder
 
             _project.Project.AddFile(EntitlementFilePath, _entitlementFileName);
             // _project.AddBuildProperty("CODE_SIGN_ENTITLEMENTS",
-                // EntitlementFilePath);
+            // EntitlementFilePath);
             _project.WriteToFile();
             return entitlements;
         }
@@ -41,6 +42,25 @@ namespace XcodeProjectBuilder
         {
             var manager = ReadManager();
             manager.AddPushNotifications(development);
+            manager.WriteToFile();
+        }
+
+        /// <summary>
+        /// FCM Manual Configs
+        /// https://firebase.google.com/docs/cloud-messaging/unity/client?hl=ko#enable_push_notifications_on_apple_platforms
+        /// </summary>
+        public void WriteFirebasePushNotifications()
+        {
+            _project.Project.AddFrameworkToProject(_project.UnityMainTargetGuid, "UserNotifications.framework", true);
+            _project.WriteToFile();
+            WritePushNotifications();
+            WriteBackgroundModes(BackgroundModesOptions.RemoteNotifications);
+        }
+
+        public void WriteBackgroundModes(BackgroundModesOptions options)
+        {
+            var manager = ReadManager();
+            manager.AddBackgroundModes(options);
             manager.WriteToFile();
         }
 
