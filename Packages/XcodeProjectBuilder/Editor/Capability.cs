@@ -45,6 +45,22 @@ namespace XcodeProjectBuilder
             manager.WriteToFile();
         }
 
+        private const string AuthServiceFramework = "AuthenticationServices.framework";
+        public void WriteSignIn()
+        {
+            var unityTargetGuid = _project.UnityFrameworkTargetGuid;
+            _project.Project.AddFrameworkToProject(unityTargetGuid, AuthServiceFramework, false);
+
+            var mainTargetGuid = _project.UnityMainTargetGuid;
+            _project.Project.AddFrameworkToProject(mainTargetGuid, AuthServiceFramework, false);
+            
+            _project.WriteToFile();
+            
+            var manager = ReadManager();
+            manager.AddSignInWithApple();
+            manager.WriteToFile();
+        }
+
         /// <summary>
         /// FCM Manual Configs
         /// https://firebase.google.com/docs/cloud-messaging/unity/client?hl=ko#enable_push_notifications_on_apple_platforms
@@ -81,12 +97,14 @@ namespace XcodeProjectBuilder
         }
 
 
+        private const string StoreKitFramework = "StoreKit.framework";
+
         public void WriteInAppPurchase()
         {
             var unityTargetGuid = _project.UnityFrameworkTargetGuid;
             var mainTargetGuid = _project.UnityMainTargetGuid;
-            _project.Project.AddFrameworkToProject(unityTargetGuid, "StoreKit.framework", false);
-            _project.Project.AddFrameworkToProject(mainTargetGuid, "StoreKit.framework", false);
+            _project.Project.AddFrameworkToProject(unityTargetGuid, StoreKitFramework, false);
+            _project.Project.AddFrameworkToProject(mainTargetGuid, StoreKitFramework, false);
             _project.WriteToFile();
 
             var manager = ReadManager();
