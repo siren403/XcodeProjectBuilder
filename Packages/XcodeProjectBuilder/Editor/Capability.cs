@@ -5,58 +5,61 @@ namespace XcodeProjectBuilder
 {
     public class Capability
     {
-        private readonly XcodeProject _project;
         private readonly string _entitlementFileDirectory;
         private readonly string _entitlementFileName;
+        private readonly string _buildPath;
         private string EntitlementFilePath => $"{_entitlementFileDirectory}/{_entitlementFileName}";
 
-        internal Capability(XcodeProject project, string entitlementsFileName = "Unity-iPhone")
+        internal Capability(string buildPath, string entitlementsFileName = "Unity-iPhone")
         {
-            _project = project;
+            _buildPath = buildPath;
             _entitlementFileName = $"{entitlementsFileName}.entitlements";
             _entitlementFileDirectory = $"Unity-iPhone";
-            ReadEntitlement();
+            ReadEntitlement(ReadProject());
         }
 
+        private XcodeProject ReadProject() => XcodeProject.ReadProject(_buildPath);
 
-        private Plist ReadEntitlement()
+        private Plist ReadEntitlement(XcodeProject project)
         {
-            var path = Path.Combine(_project.BuildPath, EntitlementFilePath);
+            var path = Path.Combine(_buildPath, EntitlementFilePath);
             var entitlements = new Plist(path);
             entitlements.ReadOrCreate();
 
-            _project.Project.AddFile(EntitlementFilePath, _entitlementFileName);
+            project.Project.AddFile(EntitlementFilePath, _entitlementFileName);
             // _project.AddBuildProperty("CODE_SIGN_ENTITLEMENTS",
             // EntitlementFilePath);
-            _project.WriteToFile();
+            project.WriteToFile();
             return entitlements;
         }
 
-        private ProjectCapabilityManager ReadManager()
+        private ProjectCapabilityManager ReadManager(XcodeProject project)
         {
-            return new ProjectCapabilityManager(_project.ProjectPath, EntitlementFilePath,
-                targetGuid: _project.UnityMainTargetGuid);
+            return new ProjectCapabilityManager(project.ProjectPath, EntitlementFilePath,
+                targetGuid: project.UnityMainTargetGuid);
         }
 
         public void WritePushNotifications(bool development = false)
         {
-            var manager = ReadManager();
+            var manager = ReadManager(ReadProject());
             manager.AddPushNotifications(development);
             manager.WriteToFile();
         }
 
         private const string AuthServiceFramework = "AuthenticationServices.framework";
+
         public void WriteSignIn()
         {
-            var unityTargetGuid = _project.UnityFrameworkTargetGuid;
-            _project.Project.AddFrameworkToProject(unityTargetGuid, AuthServiceFramework, false);
+            var project = ReadProject();
+            var unityTargetGuid = project.UnityFrameworkTargetGuid;
+            project.Project.AddFrameworkToProject(unityTargetGuid, AuthServiceFramework, false);
 
-            var mainTargetGuid = _project.UnityMainTargetGuid;
-            _project.Project.AddFrameworkToProject(mainTargetGuid, AuthServiceFramework, false);
-            
-            _project.WriteToFile();
-            
-            var manager = ReadManager();
+            var mainTargetGuid = project.UnityMainTargetGuid;
+            project.Project.AddFrameworkToProject(mainTargetGuid, AuthServiceFramework, false);
+
+            project.WriteToFile();
+
+            var manager = ReadManager(project);
             manager.AddSignInWithApple();
             manager.WriteToFile();
         }
@@ -67,15 +70,16 @@ namespace XcodeProjectBuilder
         /// </summary>
         public void WriteFirebasePushNotifications()
         {
-            _project.Project.AddFrameworkToProject(_project.UnityMainTargetGuid, "UserNotifications.framework", true);
-            _project.WriteToFile();
+            var project = ReadProject();
+            project.Project.AddFrameworkToProject(project.UnityMainTargetGuid, "UserNotifications.framework", true);
+            project.WriteToFile();
             WritePushNotifications();
             WriteBackgroundModes(BackgroundModesOptions.RemoteNotifications);
         }
 
         public void WriteBackgroundModes(BackgroundModesOptions options)
         {
-            var manager = ReadManager();
+            var manager = ReadManager(ReadProject());
             manager.AddBackgroundModes(options);
             manager.WriteToFile();
         }
@@ -85,15 +89,17 @@ namespace XcodeProjectBuilder
         /// </summary>
         public void WriteGameCenter()
         {
+            var project = ReadProject();
+
             // manual entitlement
-            var entitlements = ReadEntitlement();
+            var entitlements = ReadEntitlement(project);
             entitlements.EnableGameCenter();
             entitlements.WriteToFile();
 
             // add BuildSettings/Signing/CodeSignEntitlements
-            _project.Project.AddCapability(_project.UnityMainTargetGuid, PBXCapabilityType.GameCenter,
+            project.Project.AddCapability(project.UnityMainTargetGuid, PBXCapabilityType.GameCenter,
                 EntitlementFilePath);
-            _project.WriteToFile();
+            project.WriteToFile();
         }
 
 
@@ -101,13 +107,15 @@ namespace XcodeProjectBuilder
 
         public void WriteInAppPurchase()
         {
-            var unityTargetGuid = _project.UnityFrameworkTargetGuid;
-            var mainTargetGuid = _project.UnityMainTargetGuid;
-            _project.Project.AddFrameworkToProject(unityTargetGuid, StoreKitFramework, false);
-            _project.Project.AddFrameworkToProject(mainTargetGuid, StoreKitFramework, false);
-            _project.WriteToFile();
+            var project = ReadProject();
 
-            var manager = ReadManager();
+            var unityTargetGuid = project.UnityFrameworkTargetGuid;
+            var mainTargetGuid = project.UnityMainTargetGuid;
+            project.Project.AddFrameworkToProject(unityTargetGuid, StoreKitFramework, false);
+            project.Project.AddFrameworkToProject(mainTargetGuid, StoreKitFramework, false);
+            project.WriteToFile();
+
+            var manager = ReadManager(project);
             manager.AddInAppPurchase();
             manager.WriteToFile();
         }
