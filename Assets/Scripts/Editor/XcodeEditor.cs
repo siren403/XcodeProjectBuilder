@@ -66,6 +66,14 @@ namespace Editor
                 capability.WriteGameCenter();
                 capability.WriteInAppPurchase();
             };
+            rootVisualElement.Q<Button>("test-case-1").clicked += () =>
+            {
+                var capability = XcodeProject.ReadCapability("build");
+                capability.WriteSignIn();
+                capability.WriteFirebasePushNotifications();
+                capability.WriteInAppPurchase();
+            };
+            
         }
 
         private static XcodeProject CreateBuilder()

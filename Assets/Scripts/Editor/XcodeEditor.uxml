@@ -13,5 +13,6 @@
         <engine:Button name="add-game-center" text="Add GameCenter"/>
         <engine:Button name="add-in-app" text="Add InApp"/>
         <engine:Button name="all" text="All"/>
+        <engine:Button name="test-case-1" text="Test Case 1"/>
     </engine:Foldout>
 </engine:UXML>

@@ -20,7 +20,7 @@ namespace XcodeProjectBuilder
 
         public static Capability ReadCapability(string buildPath)
         {
-            return new Capability(ReadProject(buildPath));
+            return new Capability(buildPath);
         }
 
 

@@ -5,7 +5,7 @@ using XcodeProjectBuilder;
 
 public static class ExamplePostProcess
 {
-    [PostProcessBuild]
+    // [PostProcessBuild]
     public static void OnPostProcess(BuildTarget buildTarget, string buildPath)
     {
         if (buildTarget != BuildTarget.iOS) return;
